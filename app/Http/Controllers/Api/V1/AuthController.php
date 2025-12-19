@@ -10,9 +10,6 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * Register a new user
-     */
     public function register(Request $request)
     {
         $request->validate([
@@ -26,8 +23,6 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
-        // Create token with specific abilities
         $token = $user->createToken(
             name: $request->device_name ?? 'default',
             abilities: ['*']
@@ -43,10 +38,6 @@ class AuthController extends Controller
             ]
         ], 201);
     }
-
-    /**
-     * Login user and create token
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -54,8 +45,6 @@ class AuthController extends Controller
             'password' => 'required',
             'device_name' => 'nullable|string',
         ]);
-
-        // Rate limiting
         $key = 'login.' . $request->ip();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
@@ -67,7 +56,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            RateLimiter::hit($key, 60); // Lock for 60 seconds after failed attempt
+            RateLimiter::hit($key, 60);
             
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
@@ -75,11 +64,9 @@ class AuthController extends Controller
         }
 
         RateLimiter::clear($key);
-
-        // Create token with abilities/scopes
         $token = $user->createToken(
             name: $request->device_name ?? 'web-app',
-            abilities: ['*'] // or specific abilities like ['billing:read', 'billing:write']
+            abilities: ['*']
         )->plainTextToken;
 
         return response()->json([
@@ -92,10 +79,6 @@ class AuthController extends Controller
             ]
         ]);
     }
-
-    /**
-     * Create token for n8n or other services
-     */
     public function createApiToken(Request $request)
     {
         $request->validate([
@@ -119,10 +102,6 @@ class AuthController extends Controller
             ]
         ]);
     }
-
-    /**
-     * Get authenticated user
-     */
     public function user(Request $request)
     {
         return response()->json([
