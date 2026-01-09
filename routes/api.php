@@ -23,10 +23,11 @@ Route::put('issues/updateissues', [IssuesController::class , 'update']);
 Route::delete('issues/removeissues', [IssuesController::class , 'destroy']);
 
 
-Route::apiResource('automationdashboard', AutomationDashboardController::class);
-Route::get('conversation/logs', [ConversationController::class , 'displayHandsoff']);
-Route::apiResource('conversation', ConversationController::class);
 
+Route::get('conversation/logs', [ConversationController::class , 'displayHandsoff']);
+Route::put('conversation/update', [ConversationController::class , 'updateTransferLogs']);
+Route::apiResource('conversation', ConversationController::class);
+Route::apiResource('automationdashboard', AutomationDashboardController::class);
 
 
 Route::get('/user', [AuthController::class, 'user']);

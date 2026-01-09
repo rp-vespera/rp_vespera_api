@@ -19,7 +19,7 @@ class ConversationRepository
 
     public function find(int $conversation_id): ?ConversationModel
     {
-        return ConversationModel::where('conversation_log_id', $conversation_id)->first();
+        return ConversationModel::where('conversation_id', $conversation_id)->first();
     }
 
     public function create(CreateConversationRecordDTO $dto): ConversationModel
@@ -43,14 +43,14 @@ class ConversationRepository
         $conversation->update($data);
         return $conversation;
     }
-    // public function UpdateTransferLogs(ConversationModel $conversation, array $data , UpdateStatusDTO $updateDTO): ConversationModel
-    // {
+    public function updateTransferLogs(ConversationModel $conversation,UpdateStatusDTO $updateDTO): ConversationModel {
+        $conversation->update([
+            'status'               => $updateDTO->status,
+            'transfer_count_bot'   => $updateDTO->transfer_count_bot,
+            'transfer_count_human' => $updateDTO->transfer_count_human,
+        ]);
 
-    //     return ConversationModel::updateOrCreate([
-    //         'conversation_id'            => $updateDTO->conversation_id,
-    //         'status'                     => $updateDTO->status,
-    //         'transfer_count_bot'         => $updateDTO->transfer_count_bot,
-    //         'transfer_count_human'       => $updateDTO->transfer_count_human,
-    //     ]);
-    // }
+        return $conversation;
+    }
+
 }

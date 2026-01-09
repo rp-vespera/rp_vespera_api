@@ -53,4 +53,21 @@ class ConversationController extends Controller
             $this->service->update($conversationid, $request->all())
         );
     }
+    public function updateTransferLogs(Request $request)
+    {
+        $validated = $request->validate([
+            'conversation_id'       => 'required|integer',
+            'status'                => 'required|string',
+            'transfer_count_bot'    => 'required|integer',
+            'transfer_count_human'  => 'required|integer',
+        ]);
+
+        $conversation = $this->service->UpdateTransferHandoff($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Transfer logs updated successfully.',
+            'data'    => $conversation,
+        ]);
+    }
 }

@@ -3,6 +3,8 @@
 namespace App\Domain\AutomationDashboard\Services;
 
 use App\Domain\AutomationDashboard\DTO\CreateConversationRecordDTO;
+use App\Domain\AutomationDashboard\DTO\UpdateStatusDTO;
+use App\Domain\AutomationDashboard\Models\ConversationModel;
 use App\Domain\AutomationDashboard\Repositories\ConversationRepository;
 
 class ConversationServices
@@ -41,5 +43,22 @@ class ConversationServices
     {
         $conversation = $this->repository->find($conversation_id);
         return $this->repository->update($conversation, $data);
+    }
+    public function UpdateTransferHandoff(array $data): ConversationModel
+    {
+        $conversation = $this->repository->find($data['conversation_id']);
+
+        if (!$conversation) {
+            throw new \Exception('Conversation not found.');
+        }
+
+        $dto = new UpdateStatusDTO(
+            conversation_id: $data['conversation_id'],
+            status: $data['status'],
+            transfer_count_bot: $data['transfer_count_bot'],
+            transfer_count_human: $data['transfer_count_human'],
+        );
+
+        return $this->repository->updateTransferLogs($conversation, $dto);
     }
 }
