@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AutoForfeitureController;
 use App\Http\Controllers\Api\V1\AutomationDashboardController;
 use App\Http\Controllers\Api\V1\BillingController;
+use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\IssuesController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,10 @@ Route::put('issues/updateissues', [IssuesController::class , 'update']);
 Route::delete('issues/removeissues', [IssuesController::class , 'destroy']);
 
 
+
+Route::get('conversation/logs', [ConversationController::class , 'displayHandsoff']);
+Route::put('conversation/update', [ConversationController::class , 'updateTransferLogs']);
+Route::apiResource('conversation', ConversationController::class);
 Route::apiResource('automationdashboard', AutomationDashboardController::class);
 
 
