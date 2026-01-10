@@ -40,7 +40,7 @@ class AutoForfeitureController extends Controller
 
     public function readGoogleSheet()
     {
-        $sheetId = '1fzhtTYuifG4_RNd200WyMjTD0a5RkjuWU9Vf2Hm2wXw';
+        $sheetId = '1c81o3OvnAeeAcGdqYR_ti_fxKi93VR9lyjhkYhLySQM';
         $gid = 0;
         $url = "https://docs.google.com/spreadsheets/d/{$sheetId}/export?format=csv&gid={$gid}";
         $csv = file_get_contents($url);
@@ -53,8 +53,8 @@ class AutoForfeitureController extends Controller
         $sheetDocs = [];
         foreach (array_slice($lines, 1) as $line) {
             $row = str_getcsv($line);
-            if (isset($row[4]) && !empty($row[4])) {
-                $sheetDocs[] = "'" . addslashes($row[4]) . "'";
+            if (isset($row[2]) && !empty($row[2])) {
+                $sheetDocs[] = "'" . addslashes($row[2]) . "'";
             }
         }
 
@@ -73,7 +73,7 @@ class AutoForfeitureController extends Controller
     {
         // 1. Read Google Sheet
         $sheetId = '1fzhtTYuifG4_RNd200WyMjTD0a5RkjuWU9Vf2Hm2wXw';
-        $sheetId2 = '1fzhtTYuifG4_RNd200WyMjTD0a5RkjuWU9Vf2Hm2wXw';
+        $sheetId2 = '1c81o3OvnAeeAcGdqYR_ti_fxKi93VR9lyjhkYhLySQM';
         $gid = 0;
         $url = "https://docs.google.com/spreadsheets/d/{$sheetId}/export?format=csv&gid={$gid}";
         $url2 = "https://docs.google.com/spreadsheets/d/{$sheetId2}/export?format=csv&gid={$gid}";
@@ -100,8 +100,8 @@ class AutoForfeitureController extends Controller
         }
         foreach (array_slice($lines2, 1) as $line2) {
             $row2 = str_getcsv($line2);
-            if (isset($row2[4]) && !empty($row2[4])) {
-                $sheetDocs2[] = "'" . addslashes($row2[4]) . "'";
+            if (isset($row2[1]) && !empty($row2[1])) {
+                $sheetDocs2[] = "'" . addslashes($row2[1]) . "'";
             }
         }
 
@@ -205,21 +205,27 @@ GROUP BY agePay.mp_i_lot_id, agePay.ageDesc
 
         $results = DB::connection('mysql_secondary')->select($query);
 
-        $responseData = [
-            'data' => $results,
-            'count' => count($results)
-        ];
-
-        // Or, if you want **each row** to include the total count:
-        foreach ($results as &$row) {
-            $row->total_count = count($results);
-        }
-
-        return response()->json([
-            'data' => $results
-        ]);
+        return response()->json($results);
     }
 
+    public function getPreownDue(Request $request)
+    {
+        $data = $request->validate([
+            'mp_l_preownership_id'           => 'required|integer',
+        ]);
+        $query = "SELECT
+                 SUM(futurePaymentbreakDown.amt_amort-futurePaymentbreakDown.amt_amort_used) AS dueBalance,
+                 SUM(futurePaymentbreakDown.amt_amort_sales-futurePaymentbreakDown.amt_amort_sales_used) AS dueSalesBalance
+                 FROM mp_l_pre_ownership_future_pmt_breakdown futurePaymentbreakDown
+                 INNER JOIN mp_l_preownership preown ON preown.mp_l_preownership_id = futurePaymentbreakDown.mp_l_preowership_id
+                 WHERE futurePaymentbreakDown.date_of_payment<=DATE(NOW())
+                 AND preown.mp_l_preownership_id =  :preownId
+                 GROUP BY preown.mp_l_preownership_id;";
+
+        $result = DB::connection('mysql_secondary')->select($query, ['preownId' => $data['mp_l_preownership_id']]);
+
+        return response()->json($result);
+    }
     public function saveToDocTReference()
     {
         return DB::connection('mysql_secondary')->transaction(function () {

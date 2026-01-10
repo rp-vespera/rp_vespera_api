@@ -26,7 +26,7 @@ class ForfeitureLineService
             'amt_overdue'           => null,
             'amt_paid'              => null,
             'date_last_payment'     => $data['date_last_payment'] ?? null,
-            'created'               => 'System Auto Forfeited',
+            'created'               => 'runner_autoforfeiture',
             'date_created'          => $data['date_created'] ?? now()->format('Y-m-d H:i:s'),
             'updated'               => null,
             'date_updated'          => null,

@@ -47,6 +47,7 @@ Route::get('/test3', [BillingController::class, 'index2']);
 Route::get('/readsheet', [AutoForfeitureController::class, 'readGoogleSheet']);
 Route::get('/forfeiture', [AutoForfeitureController::class, 'getAgedData']);
 Route::post('/saveDocTReference', [AutoForfeitureController::class, 'saveToDocTReference']);
+Route::post('/getPreownDue', [AutoForfeitureController::class, 'getPreownDue']);
 Route::post('/saveToForfeiture', [AutoForfeitureController::class, 'saveToForfeiture']);
 Route::post('/saveToForfeitureLine', [AutoForfeitureController::class, 'saveToForfeitureLine']);
 Route::post('/saveToForfeitureSignee', [AutoForfeitureController::class, 'saveToForfeitureSignee']);

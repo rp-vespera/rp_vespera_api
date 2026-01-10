@@ -35,7 +35,7 @@ class AutoForfeitureService
             'documentno'                =>  $data['documentno'],
             'mp_s_owner_id'             => $data['mp_s_owner_id'],
             'doc_t_reference_number_id' => $data['doc_t_reference_number_id'],
-            'created'                   => 'System Auto Forfeited',
+            'created'                   => 'runner_autoforfeiture',
             'date_created'              => now()->format('Y-m-d H:i:s'),
             'updated'                   => null,
             'date_updated'              => null,
