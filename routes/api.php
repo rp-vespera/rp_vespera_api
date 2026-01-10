@@ -28,6 +28,7 @@ Route::delete('issues/removeissues', [IssuesController::class , 'destroy']);
 Route::get('conversation/logs', [ConversationController::class , 'displayHandsoff']);
 Route::put('conversation/update', [ConversationController::class , 'updateTransferLogs']);
 Route::put('conversation/updateBot', [ConversationController::class , 'updateTransferLogsBot']);
+Route::get('conversation/fetchpsid/{psid}', [ConversationController::class , 'fetchCustomerPSID']);
 Route::apiResource('conversation', ConversationController::class);
 Route::apiResource('automationdashboard', AutomationDashboardController::class);
 

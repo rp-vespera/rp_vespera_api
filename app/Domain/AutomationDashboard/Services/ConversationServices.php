@@ -17,6 +17,10 @@ class ConversationServices
     {
         return $this->repository->getAll();
     }
+    public function fetchPSID(int $customer_psid)
+    {
+        return $this->repository->getCustomerPSID($customer_psid);
+    }
     public function listLogsHandsoff()
     {
         return $this->repository->displayHumanHandsOff();

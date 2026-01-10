@@ -19,6 +19,12 @@ class ConversationController extends Controller
             $this->service->list()
         );
     }
+    public function fetchCustomerPSID(int $customer_psid)
+    {
+        return response()->json(
+            $this->service->fetchPSID($customer_psid)
+        );
+    }
     public function displayHandsoff()
     {
         return response()->json(

@@ -12,6 +12,10 @@ class ConversationRepository
     {
         return ConversationModel::where('assigned_status', 'string')->get();
     }
+    public function getCustomerPSID(int $customer_psid)
+    {
+        return ConversationModel::where('customer_psid', $customer_psid)->first();
+    }
 
     public function displayHumanHandsOff()
     {
