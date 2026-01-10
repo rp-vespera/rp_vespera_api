@@ -25,6 +25,9 @@ Route::delete('issues/removeissues', [IssuesController::class, 'destroy']);
 
 Route::get('conversation/logs', [ConversationController::class, 'displayHandsoff']);
 Route::put('conversation/update', [ConversationController::class, 'updateTransferLogs']);
+Route::get('conversation/logs', [ConversationController::class , 'displayHandsoff']);
+Route::put('conversation/update', [ConversationController::class , 'updateTransferLogs']);
+Route::put('conversation/updateBot', [ConversationController::class , 'updateTransferLogsBot']);
 Route::apiResource('conversation', ConversationController::class);
 Route::apiResource('automationdashboard', AutomationDashboardController::class);
 
