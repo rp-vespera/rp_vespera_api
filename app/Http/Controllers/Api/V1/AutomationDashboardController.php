@@ -19,13 +19,19 @@ class AutomationDashboardController extends Controller
         );
     }
 
+    public function summary(){
+        return response()->json(
+            $this->service->getSummary()
+        );
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
-            'customer_psid'               => 'required|integer', 
+            'customer_psid'               => 'required|string', 
             'conversation_status'         => 'required|string',
-            'conversation_updated_from'   => 'required|date', 
-            'conversation_updated_to'     => 'required|date',
+            'conversation_updated_from'   => 'nullable|date', 
+            'conversation_updated_to'     => 'nullable|date',
         ]);
 
         return response()->json(
@@ -44,9 +50,8 @@ class AutomationDashboardController extends Controller
     public function updateConversationLogs(Request $request)
     {
         $validated = $request->validate([
-            'customer_psid'         => 'required|integer',
+            'customer_psid'               => 'required|string',
             'conversation_status'         => 'required|string',
-            'conversation_updated_from'   => 'required|date',
             'conversation_updated_to'     => 'nullable|date',
         ]);
 

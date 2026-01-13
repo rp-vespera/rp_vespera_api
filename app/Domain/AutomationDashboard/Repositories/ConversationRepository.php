@@ -21,7 +21,7 @@ class ConversationRepository
 
     public function displayHumanHandsOff()
     {
-        return ConversationModel::where('status','!=','open')->get();
+        return ConversationModel::where('status','!=','open')->orderBy('date_created','desc')->get();
     }
 
     public function find(int $conversation_id): ?ConversationModel
@@ -59,7 +59,7 @@ class ConversationRepository
                 'last_message'         => $dto->last_message,
                 'transfer_count_bot'   => $dto->transfer_count_bot,
                 'transfer_count_human' => $dto->transfer_count_human,
-                'date_created'         => $dto->date_created ?? now(),
+                'date_created'         => $dto->date_created ?? now('Asia/Manila'),
             ]
         );
     }

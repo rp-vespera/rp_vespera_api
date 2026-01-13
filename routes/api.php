@@ -34,6 +34,7 @@ Route::apiResource('conversation', ConversationController::class);
 
 
 Route::put('automationdashboard/updateConversation', [AutomationDashboardController::class , 'updateConversationLogs']);
+Route::get('automationdashboard/summary', [AutomationDashboardController::class , 'summary']);
 Route::apiResource('automationdashboard', AutomationDashboardController::class);
 
 

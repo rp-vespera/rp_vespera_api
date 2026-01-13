@@ -6,6 +6,7 @@ use App\Domain\AutomationDashboard\DTO\CreateAutomationDashboardDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateConversationDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateConversationLogsDTO;
 use App\Domain\AutomationDashboard\Models\AutomationDashboard;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 
@@ -33,7 +34,7 @@ class AutomationDashboardRepository
             'conversation_updated_from'  => $dto->conversation_updated_from,
             'conversation_updated_to'    => $dto->conversation_updated_to,
             'created_by'                 => $dto->created_by,
-            'date_created'               => now(),
+            'date_created'               => now('Asia/Manila'),
         ]);
     }
 
@@ -43,14 +44,49 @@ class AutomationDashboardRepository
         return $conversation;
     }
 
-    public function updateConversationLogs(AutomationDashboard $conversation,UpdateConversationLogsDTO $updateDTO): AutomationDashboard {
+    public function updateConversationLogs( UpdateConversationLogsDTO $updateDTO): ?AutomationDashboard {
+
+        $conversation = AutomationDashboard::where('customer_psid', $updateDTO->customer_psid)
+            ->latest('conversation_log_id')
+            ->first();
+
+        if (!$conversation) {
+            return null;
+        }
+
         $conversation->update([
-            'customer_psid'  => $updateDTO->customer_psid,
-            'conversation_status'  => $updateDTO->conversation_status,
-            'conversation_updated_from'   => $updateDTO->conversation_updated_from,
+            'conversation_status'     => $updateDTO->conversation_status,
             'conversation_updated_to' => $updateDTO->conversation_updated_to,
         ]);
 
         return $conversation;
     }
+
+
+
+    //Summary
+
+    public function getDashboardSummary(): ?object
+    {
+        return DB::table('wbs_i_conversation')
+            ->selectRaw('
+                SUM(transfer_count_human) AS bot_to_human_transfers,
+                COUNT(CASE WHEN status != "OPEN" THEN 1 END) AS active_human_handled_chats
+            ')
+            ->first();
+    }
+
+    public function getAverageMinutesOnHuman(): float
+    {
+        $avgMinutes = DB::table('wbs_i_transitionconversation_logs')
+            ->whereNotNull('conversation_updated_from')
+            ->whereNotNull('conversation_updated_to')
+            ->whereRaw('conversation_updated_to > conversation_updated_from')
+            ->avg(DB::raw(
+                'TIMESTAMPDIFF(SECOND, conversation_updated_from, conversation_updated_to) / 60'
+            ));
+
+        return (float) max($avgMinutes ?? 0, 0);
+    }
+
 }

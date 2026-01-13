@@ -6,7 +6,7 @@ class CreateConversationRecordDTO
 {
     public function __construct(
         public ?int $conversation_id,
-        public ?int $customer_psid,
+        public ?string $customer_psid,
         public ?string $conversation_name,
         public ?string $assigned_status,
         public ?string $assigned_agent,

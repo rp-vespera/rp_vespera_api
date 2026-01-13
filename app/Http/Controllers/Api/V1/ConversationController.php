@@ -36,7 +36,7 @@ class ConversationController extends Controller
     {
         $data = $request->validate([
             'conversation_id'       => 'nullable|integer',
-            'customer_psid'         => 'required|integer',
+            'customer_psid'         => 'required|string',
             'conversation_name'     => 'nullable|string',
             'assigned_status'       => 'required|string',
             'assigned_agent'        => 'nullable|string',
@@ -79,7 +79,7 @@ class ConversationController extends Controller
     public function updateTransferLogsBot(Request $request)
     {
         $validated = $request->validate([
-            'customer_psid'         => 'required|integer',
+            'customer_psid'         => 'required|string',
             'status'                => 'required|string',
             'transfer_count_bot'    => 'required|integer',
             'transfer_count_human'  => 'required|integer',
@@ -96,7 +96,7 @@ class ConversationController extends Controller
     public function updateConversation(Request $request)
     {
         $validated = $request->validate([
-            'customer_psid'         => 'required|integer',
+            'customer_psid'         => 'required|string',
             'last_message'          => 'required|string',
             'date_created'          => 'nullable|date',
         ]);
@@ -112,7 +112,7 @@ class ConversationController extends Controller
     public function updateStatusLogs(Request $request)
     {
         $validated = $request->validate([
-            'customer_psid'    => 'required|integer',
+            'customer_psid'    => 'required|string',
             'status'           => 'required|string',
             'date_created'     => 'nullable|date',
         ]);
