@@ -24,5 +24,7 @@ class ConversationModel extends Model
         'transfer_count_bot',
         'transfer_count_human',
         'date_created',
+        'lead_stage',
+        'relationship_stage',
     ];
 }

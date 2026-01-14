@@ -41,6 +41,8 @@ class ConversationServices
             transfer_count_bot: $data['transfer_count_bot'],
             transfer_count_human: $data['transfer_count_human'],
             date_created: $data['date_created'],
+            lead_stage: $data['lead_stage'] ?? 'Intake',
+            relationship_stage: $data['relationship_stage'] ?? 'Neutral',
         );
 
         return $this->repository->create($dto);

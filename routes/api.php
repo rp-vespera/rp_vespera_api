@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AutoForfeitureController;
 use App\Http\Controllers\Api\V1\AutomationDashboardController;
 use App\Http\Controllers\Api\V1\BillingController;
+use App\Http\Controllers\Api\V1\ChatHistoryController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\IssuesController;
 use App\Http\Controllers\TestController;
@@ -29,6 +30,7 @@ Route::put('conversation/updatestatuslogs', [ConversationController::class, 'upd
 Route::get('conversation/logs', [ConversationController::class , 'displayHandsoff']);
 Route::put('conversation/updateConversation', [ConversationController::class , 'updateConversation']);
 Route::put('conversation/updateBot', [ConversationController::class , 'updateTransferLogsBot']);
+Route::get('conversation/list', [ConversationController::class , 'index']);
 Route::get('conversation/fetchpsid/{psid}', [ConversationController::class , 'fetchCustomerPSID']);
 Route::apiResource('conversation', ConversationController::class);
 
@@ -37,6 +39,8 @@ Route::put('automationdashboard/updateConversation', [AutomationDashboardControl
 Route::get('automationdashboard/summary', [AutomationDashboardController::class , 'summary']);
 Route::apiResource('automationdashboard', AutomationDashboardController::class);
 
+Route::get('history', [ChatHistoryController::class , 'index']);
+Route::post('history/newLogs', [ChatHistoryController::class , 'newHistoryLogs']);
 
 Route::get('/user', [AuthController::class, 'user']);
 Route::post('/logout', [AuthController::class, 'logout']);

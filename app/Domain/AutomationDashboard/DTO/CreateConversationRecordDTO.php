@@ -15,5 +15,7 @@ class CreateConversationRecordDTO
         public ?int $transfer_count_bot,
         public ?int $transfer_count_human,
         public ?string $date_created,
+        public ?string $lead_stage,
+        public ?string $relationship_stage,
     ) {}
 }

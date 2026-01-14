@@ -45,6 +45,8 @@ class ConversationController extends Controller
             'transfer_count_bot'    => 'nullable|integer',
             'transfer_count_human'  => 'nullable|integer',
             'date_created'          => 'nullable|date',
+            'lead_stage'            => 'nullable|string',
+            'relationship_stage'    => 'nullable|string',
         ]);
 
         return response()->json(

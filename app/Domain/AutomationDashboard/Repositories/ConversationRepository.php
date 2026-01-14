@@ -12,7 +12,7 @@ class ConversationRepository
 {
     public function getAll()
     {
-        return ConversationModel::all();
+        return ConversationModel::latest('date_created')->get();
     }
     public function getCustomerPSID(int $customer_psid)
     {
@@ -60,6 +60,8 @@ class ConversationRepository
                 'transfer_count_bot'   => $dto->transfer_count_bot,
                 'transfer_count_human' => $dto->transfer_count_human,
                 'date_created'         => $dto->date_created ?? now('Asia/Manila'),
+                'lead_stage'           => $dto->lead_stage,
+                'relationship_stage'   => $dto->relationship_stage,
             ]
         );
     }
