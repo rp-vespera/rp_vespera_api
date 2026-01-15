@@ -4,6 +4,7 @@ namespace App\Domain\AutomationDashboard\Services;
 
 use App\Domain\AutomationDashboard\DTO\CreateConversationRecordDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateConversationDTO;
+use App\Domain\AutomationDashboard\DTO\UpdateLeadsConversationDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateStatusDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateStatusLogsDTO;
 use App\Domain\AutomationDashboard\Models\ConversationModel;
@@ -117,5 +118,18 @@ class ConversationServices
         );
 
         return $this->repository->updateStatusLogs($conversation, $dto);
+    }
+    public function updateStatusLeads(array $data): ConversationModel {
+        $conversation = $this->repository->find_psid($data['customer_psid']);
+        if (!$conversation) {
+            throw new \Exception('Conversation not found.');
+        }
+
+        $dto = new UpdateLeadsConversationDTO(
+            customer_psid: $data['customer_psid'],
+            lead_stage: $data['lead_stage'],
+        );
+
+        return $this->repository->updateConversationLeads($conversation, $dto);
     }
 }
