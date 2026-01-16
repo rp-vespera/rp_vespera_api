@@ -142,4 +142,19 @@ class ConversationController extends Controller
             'data'    => $conversation,
         ]);
     }
+    public function updateLeadsRelationship(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_psid'       => 'required|string',
+            'relationship_stage'  => 'required|string',
+        ]);
+
+        $conversation = $this->service->updateRelationshipLeads($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Message Updated',
+            'data'    => $conversation,
+        ]);
+    }
 }

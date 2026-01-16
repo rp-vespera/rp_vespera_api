@@ -22,8 +22,6 @@ Route::post('issues/store', [IssuesController::class, 'store']);
 Route::put('issues/updateissues', [IssuesController::class, 'update']);
 Route::delete('issues/removeissues', [IssuesController::class, 'destroy']);
 
-
-
 Route::get('conversation/logs', [ConversationController::class, 'displayHandsoff']);
 Route::put('conversation/update', [ConversationController::class, 'updateTransferLogs']);
 Route::put('conversation/updatestatuslogs', [ConversationController::class, 'updateStatusLogs']);
@@ -31,10 +29,10 @@ Route::get('conversation/logs', [ConversationController::class , 'displayHandsof
 Route::put('conversation/updateConversation', [ConversationController::class , 'updateConversation']);
 Route::put('conversation/updateBot', [ConversationController::class , 'updateTransferLogsBot']);
 Route::put('conversation/updateLeadsStatus', [ConversationController::class , 'updateLeadsStatus']);
+Route::put('conversation/updateLeadsRelationship', [ConversationController::class , 'updateLeadsRelationship']);
 Route::get('conversation/list', [ConversationController::class , 'index']);
 Route::get('conversation/fetchpsid/{psid}', [ConversationController::class , 'fetchCustomerPSID']);
 Route::apiResource('conversation', ConversationController::class);
-
 
 Route::put('automationdashboard/updateConversation', [AutomationDashboardController::class , 'updateConversationLogs']);
 Route::get('automationdashboard/summary', [AutomationDashboardController::class , 'summary']);
@@ -64,6 +62,7 @@ Route::post('/saveToForfeitureLine', [AutoForfeitureController::class, 'saveToFo
 Route::post('/saveToForfeitureSignee', [AutoForfeitureController::class, 'saveToForfeitureSignee']);
 Route::post('/saveToForfeitureSigneePR', [AutoForfeitureController::class, 'saveToForfeitureSigneePR']);
 Route::get('/updateDocTReference/{docTReferenceId}', [AutoForfeitureController::class, 'updateToDocTReference']);
+
 //AUTO FORFEITE FUNCTION UPDATE
 Route::post('/updateToForfeiture', [AutoForfeitureController::class, 'updateToForfeiture']);
 Route::post('/updateToPreownership', [AutoForfeitureController::class, 'updateToPreownership']);

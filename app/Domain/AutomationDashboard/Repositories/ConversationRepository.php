@@ -5,6 +5,7 @@ namespace App\Domain\AutomationDashboard\Repositories;
 use App\Domain\AutomationDashboard\DTO\CreateConversationRecordDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateConversationDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateLeadsConversationDTO;
+use App\Domain\AutomationDashboard\DTO\UpdateRelationshipLeadsDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateStatusDTO;
 use App\Domain\AutomationDashboard\DTO\UpdateStatusLogsDTO;
 use App\Domain\AutomationDashboard\Models\ConversationModel;
@@ -109,6 +110,12 @@ class ConversationRepository
     public function updateConversationLeads(ConversationModel $conversation,UpdateLeadsConversationDTO $UpdateLeadsConversationDTO): ConversationModel {
         $conversation->update([
             'lead_stage'  => $UpdateLeadsConversationDTO->lead_stage,
+        ]);
+        return $conversation;
+    }
+    public function updateConversationRelationship(ConversationModel $conversation,UpdateRelationshipLeadsDTO $UpdateRelationshipLeadsDTO): ConversationModel {
+        $conversation->update([
+            'relationship_stage'  => $UpdateRelationshipLeadsDTO->relationship_stage,
         ]);
         return $conversation;
     }
