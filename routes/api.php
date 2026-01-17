@@ -1,5 +1,5 @@
 <?php
-
+use App\Domain\UploadReview\Models\UploadReview;
 use App\Domain\AutomationDashboard\Models\AutomationDashboard;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AutoForfeitureController;
@@ -72,4 +72,6 @@ Route::post('/updateToLot', [AutoForfeitureController::class, 'updateToLot']);
 //UPLOAD REVIEW SAVE
 Route::post('/review', [UploadReviewController::class, 'submit']);
 //UPLOAD REVIEW FETCH
-Route::get('/interments/{occupant}', [UploadReviewController::class, 'getInterments']);
+
+Route::get('/interments/{documentno}', [UploadReviewController::class, 'getInterments']);
+

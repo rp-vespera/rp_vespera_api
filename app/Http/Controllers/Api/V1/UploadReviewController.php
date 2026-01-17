@@ -8,6 +8,7 @@ use App\Domain\UploadReview\Services\UploadReviewService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use App\Domain\UploadReview\Models\UploadReview;
+use Carbon\Carbon;
 
 class UploadReviewController extends Controller
 {
@@ -24,13 +25,44 @@ class UploadReviewController extends Controller
             'q4' => 'required|string',
             'q5' => 'required|string',
             'q6' => 'required|string',
+            'fb_username' => 'nullable|string',
+            'google_username' => 'nullable|string',
             'fb_screenshot' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'google_screenshot' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $fbPath = $request->hasFile('fb_screenshot') ? $request->file('fb_screenshot')->store('reviews', 'public') : null;
-        $googlePath = $request->hasFile('google_screenshot') ? $request->file('google_screenshot')->store('reviews', 'public') : null;
+        // Check duplicate reviewer for the same document
+        if (UploadReview::where('document_no', $request->document_no)
+            ->where('reviewer_name', $request->reviewer_name)
+            ->exists()) {
+            return response()->json([
+                'message' => 'This reviewer has already submitted a review for this document.'
+            ], 422);
+        }
 
+        // Check fb_username uniqueness per document
+        if ($request->fb_username && UploadReview::where('document_no', $request->document_no)
+            ->where('fb_username', $request->fb_username)
+            ->exists()) {
+            return response()->json([
+                'message' => 'This Facebook username has already been used for this document.'
+            ], 422);
+        }
+
+        // Check google_username uniqueness per document
+        if ($request->google_username && UploadReview::where('document_no', $request->document_no)
+            ->where('google_username', $request->google_username)
+            ->exists()) {
+            return response()->json([
+                'message' => 'This Google username has already been used for this document.'
+            ], 422);
+        }
+
+        // Handle file uploads and save paths
+        $fbPath = $request->file('fb_screenshot') ? $request->file('fb_screenshot')->store('reviews') : null;
+        $googlePath = $request->file('google_screenshot') ? $request->file('google_screenshot')->store('reviews') : null;
+
+        // Save review
         UploadReview::create([
             'document_no' => $request->document_no,
             'reviewer_name' => $request->reviewer_name,
@@ -43,8 +75,8 @@ class UploadReviewController extends Controller
             'others' => $request->others,
             'fb_username' => $request->fb_username,
             'google_username' => $request->google_username,
-            'fb_screenshot_path' => $fbPath,
-            'google_screenshot_path' => $googlePath,
+            'fb_screenshot' => $fbPath,
+            'google_screenshot' => $googlePath,
             'submitted_at' => now(),
             'is_valid' => true,
         ]);
@@ -52,13 +84,15 @@ class UploadReviewController extends Controller
         return response()->json(['message' => 'Review submitted successfully.']);
     }
 
-    public function getInterments($occupant)
+
+
+
+    public function getInterments($documentno)
     {
         $query = "SELECT
             bpar.`name1`,
             inter.`documentno`,
-            inter.`date_interment`,
-            occ.`occupant_name` AS occupant
+            inter.`date_interment`
         FROM mp_t_interment_order inter
         JOIN mp_l_ownership ship USING (mp_l_ownership_id)
         JOIN mp_l_preownership preown USING (mp_l_preownership_id)
@@ -66,15 +100,32 @@ class UploadReviewController extends Controller
             ON preown.`mp_i_owner_id` = owner.`mp_i_owner_id`
         JOIN bpar_i_person bpar
             ON owner.`bpar_i_person_id` = bpar.`bpar_i_person_id`
-        JOIN mp_t_interment_order_occupancy occ 
-            ON inter.`mp_t_interment_order_id` = occ.`mp_t_interment_order_id`
-        WHERE inter.`documentno` NOT LIKE '%-CA'
-          AND inter.`documentno` NOT LIKE '%DR'
-          AND occ.`occupant_name` = :occupantName";
+        WHERE inter.`documentno` = :documentno
+          AND inter.`documentno` NOT LIKE '%-CA'
+          AND inter.`documentno` NOT LIKE '%DR'";
 
         $interments = DB::connection('mysql_secondary')
-            ->select($query, ['occupantName' => $occupant]);
+            ->select($query, ['documentno' => $documentno]);
+
+        if (empty($interments)) {
+            return response()->json(['message' => 'No records found.'], 404);
+        }
+
+        $intermentDate = $interments[0]->date_interment ?? null;
+
+        if (!$intermentDate) {
+            return response()->json(['message' => 'Invalid record.'], 500);
+        }
+
+        // Expiration: 10 years after interment date
+        $expiryDate = Carbon::parse($intermentDate)->addYears(10);
+        $now = Carbon::now();
+
+        if ($now->gt($expiryDate)) {
+            return response()->json(['message' => 'Link expired.'], 403);
+        }
 
         return response()->json($interments);
     }
+
 }

@@ -27,6 +27,9 @@ return new class extends Migration
             $table->string('fb_username')->nullable();
             $table->string('google_username')->nullable();
 
+            $table->longText('fb_screenshot')->nullable();
+            $table->longText('google_screenshot')->nullable();
+            
             $table->timestamp('submitted_at');
             $table->boolean('is_valid')->default(true);
 
