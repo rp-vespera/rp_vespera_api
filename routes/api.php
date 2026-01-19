@@ -1,5 +1,5 @@
 <?php
-
+use App\Domain\UploadReview\Models\UploadReview;
 use App\Domain\AutomationDashboard\Models\AutomationDashboard;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AutoForfeitureController;
@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\ChatHistoryController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\IssuesController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\Api\V1\UploadReviewController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -68,3 +69,10 @@ Route::get('/updateDocTReference/{docTReferenceId}', [AutoForfeitureController::
 Route::post('/updateToForfeiture', [AutoForfeitureController::class, 'updateToForfeiture']);
 Route::post('/updateToPreownership', [AutoForfeitureController::class, 'updateToPreownership']);
 Route::post('/updateToLot', [AutoForfeitureController::class, 'updateToLot']);
+
+//UPLOAD REVIEW SAVE
+Route::post('/review', [UploadReviewController::class, 'submit']);
+//UPLOAD REVIEW FETCH
+
+Route::get('/interments/{occupant}', [UploadReviewController::class, 'getInterments']);
+
