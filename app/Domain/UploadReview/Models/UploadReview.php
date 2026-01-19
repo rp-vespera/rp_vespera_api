@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UploadReview extends Model
 {
     // 🔥 THIS FIXES THE 500 ERROR
-    protected $table = 'reviews';
+    protected $table = 'wbs_i_reviews';
 
 protected $fillable = [
     'document_no',

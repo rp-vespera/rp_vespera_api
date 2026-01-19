@@ -73,5 +73,5 @@ Route::post('/updateToLot', [AutoForfeitureController::class, 'updateToLot']);
 Route::post('/review', [UploadReviewController::class, 'submit']);
 //UPLOAD REVIEW FETCH
 
-Route::get('/interments/{documentno}', [UploadReviewController::class, 'getInterments']);
+Route::get('/interments/{occupant}', [UploadReviewController::class, 'getInterments']);
 
