@@ -131,7 +131,7 @@ class UploadReviewController extends Controller
         }
 
         // Expiration: 10 years after interment date
-        $expiryDate = Carbon::parse($intermentDate)->addYears(10);
+        $expiryDate = Carbon::parse($intermentDate)->addDays(3);
         $now = Carbon::now();
 
         if ($now->gt($expiryDate)) {
