@@ -46,6 +46,8 @@ jobs:
 
             # Export secrets for safer usage
             export APP_URL="${{ secrets.STAGING_APP_URL }}"
+            export DB_HOST="${{ secrets.STAGING_DB_HOST }}"
+            export DB_PORT="${{ secrets.STAGING_DB_PORT }}"
             export DB_DATABASE="${{ secrets.STAGING_DB_NAME }}"
             export DB_USERNAME="${{ secrets.STAGING_USERNAME }}"
             export DB_PASSWORD="${{ secrets.STAGING_PASSWORD }}"
