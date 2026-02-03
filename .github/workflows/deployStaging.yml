@@ -18,7 +18,8 @@ jobs:
         with:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
+          key: ${{ secrets.STAGING_SSH_KEY_B64 }}
+          key_format: base64
           script: |
             set -e
             echo "🚀 Starting STAGING dddddeployment..."
