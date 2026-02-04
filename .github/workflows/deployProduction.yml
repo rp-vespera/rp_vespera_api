@@ -83,7 +83,7 @@ jobs:
             # SECONDARY DATABASE (DB2)
             # READ-ONLY / REFERENCE
             # ==========================
-            export DB2_HOST="${{ secrets.PRODUCTION_HOST }}"
+            export DB2_HOST="${{ secrets.PRODUCTION_HOST2 }}"
             export DB2_PORT="${{ secrets.PRODUCTION_DB_PORT2 }}"
             export DB2_USERNAME="${{ secrets.PRODUCTION_USERNAME2 }}"
             export DB2_PASSWORD="${{ secrets.PRODUCTION_PASSWORD2 }}"
