@@ -1,0 +1,118 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to OVH Staging
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            set -e
+            echo "🚀 Starting STAGING deployment..."
+
+            if [ ! -d /var/www/staging/.git ]; then
+              rm -rf /var/www/staging
+              git clone https://github.com/rp-vespera/rp_vespera_api.git /var/www/staging
+            fi
+
+            cd /var/www/staging
+
+            git fetch origin
+            git checkout develop
+            git reset --hard origin/develop
+            git clean -fd
+
+            echo "📦 Installing dependencies..."
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+
+            echo "⚙️ Preparing environment..."
+            if [ ! -f .env ]; then
+              cp .env.example .env
+            fi
+
+            # ==========================
+            # PRIMARY DATABASE (DB1)
+            # ==========================
+            export APP_URL="${{ secrets.STAGING_APP_URL }}"
+            export DB_HOST="${{ secrets.STAGING_DB_HOST }}"
+            export DB_PORT="${{ secrets.STAGING_DB_PORT }}"
+            export DB_DATABASE="${{ secrets.STAGING_DB_NAME }}"
+            export DB_USERNAME="${{ secrets.STAGING_USERNAME }}"
+            export DB_PASSWORD="${{ secrets.STAGING_PASSWORD }}"
+
+            # ==========================
+            # SECONDARY DATABASE (DB2)
+            # ==========================
+            export DB2_HOST="${{ secrets.STAGING_DB_HOST2 }}"
+            export DB2_PORT="${{ secrets.STAGING_DB_PORT2 }}"
+            export DB2_DATABASE="${{ secrets.STAGING_DB_NAME2 }}"
+            export DB2_USERNAME="${{ secrets.STAGING_USERNAME2 }}"
+            export DB2_PASSWORD="${{ secrets.STAGING_PASSWORD2 }}"
+
+            # --------------------------
+            # Write APP + DB1 to .env
+            # --------------------------
+            sed -i "s|^APP_ENV=.*|APP_ENV=staging|" .env
+            sed -i "s|^APP_DEBUG=.*|APP_DEBUG=false|" .env
+            sed -i "s|^APP_URL=.*|APP_URL=${APP_URL}|" .env
+
+            sed -i "s|^DB_HOST=.*|DB_HOST=${DB_HOST}|" .env
+            sed -i "s|^DB_PORT=.*|DB_PORT=${DB_PORT}|" .env
+            sed -i "s|^DB_DATABASE=.*|DB_DATABASE=${DB_DATABASE}|" .env
+            sed -i "s|^DB_USERNAME=.*|DB_USERNAME=${DB_USERNAME}|" .env
+            sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=\"${DB_PASSWORD}\"|" .env
+
+            # --------------------------
+            # Write DB2 (replace OR add)
+            # --------------------------
+            echo "⚙️ Writing DB2 credentials..."
+
+            grep -q "^DB2_HOST=" .env \
+              && sed -i "s|^DB2_HOST=.*|DB2_HOST=${DB2_HOST}|" .env \
+              || echo "DB2_HOST=${DB2_HOST}" >> .env
+
+            grep -q "^DB2_PORT=" .env \
+              && sed -i "s|^DB2_PORT=.*|DB2_PORT=${DB2_PORT}|" .env \
+              || echo "DB2_PORT=${DB2_PORT}" >> .env
+
+            grep -q "^DB2_DATABASE=" .env \
+              && sed -i "s|^DB2_DATABASE=.*|DB2_DATABASE=${DB2_DATABASE}|" .env \
+              || echo "DB2_DATABASE=${DB2_DATABASE}" >> .env
+
+            grep -q "^DB2_USERNAME=" .env \
+              && sed -i "s|^DB2_USERNAME=.*|DB2_USERNAME=${DB2_USERNAME}|" .env \
+              || echo "DB2_USERNAME=${DB2_USERNAME}" >> .env
+
+            grep -q "^DB2_PASSWORD=" .env \
+              && sed -i "s|^DB2_PASSWORD=.*|DB2_PASSWORD=\"${DB2_PASSWORD}\"|" .env \
+              || echo "DB2_PASSWORD=\"${DB2_PASSWORD}\"" >> .env
+
+            echo "🔑 Ensuring APP_KEY exists..."
+            if ! grep -q "^APP_KEY=" .env || grep -q "^APP_KEY=$" .env; then
+              php artisan key:generate
+            fi
+
+            echo "🧹 Clearing & caching config..."
+            php artisan config:clear
+            php artisan config:cache
+
+            echo "🗄️ Running migrations (PRIMARY DB ONLY)..."
+            php artisan migrate --force
+
+            echo "⚡ Optimizing application..."
+            php artisan optimize
+
+            echo "✅ STAGING deployment finished successfully!"
